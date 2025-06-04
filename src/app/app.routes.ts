@@ -4,6 +4,7 @@ import { Game } from './game/game';
 import { Store } from './store/store';
 import { Progress } from './progress/progress';
 import { Rules } from './rules/rules';
+import { Victory } from './victory/victory';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -12,5 +13,6 @@ export const routes: Routes = [
   { path: 'store', component: Store },
   { path: 'progress', component: Progress },
   { path: 'rules', component: Rules },
+  { path: 'victory', component: Victory },
   { path: '**', redirectTo: 'home' } // Ruta para manejar URLs no encontradas
 ];

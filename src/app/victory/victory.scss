@@ -1,0 +1,45 @@
+.victory-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  
+  h1 {
+    color: #ff41f8;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.5rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+  
+  .message {
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+  }
+  
+  .pdf-container {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .download-link {
+    margin-top: 1rem;
+    
+    a {
+      color: #ff41f8;
+      font-weight: bold;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

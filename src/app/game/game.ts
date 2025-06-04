@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService, GameLevel } from '../../services/game.service';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 interface Level {
   word: string;
@@ -35,7 +36,7 @@ export class Game implements OnInit, OnDestroy {
   // Suscripciones
   private subscriptions: Subscription[] = [];
   
-  constructor(private gameService: GameService) {}
+  constructor(private gameService: GameService, private router: Router) {}
   
   ngOnInit() {
     // Suscribirse a los cambios en el estado del juego
@@ -209,6 +210,10 @@ export class Game implements OnInit, OnDestroy {
         }, 2000);
       } else {
         this.message = '¡Felicidades! ¡Has completado todas las fases!';
+        // Si es el último nivel, redirigir a la página de victoria
+        setTimeout(() => {
+          this.router.navigate(['/victory']);
+        }, 2000);
       }
     } else {
       // Respuesta incorrecta
