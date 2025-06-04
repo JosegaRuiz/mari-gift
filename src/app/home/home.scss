@@ -1,0 +1,46 @@
+.home-container {
+  text-align: center;
+  padding: 2rem;
+  
+  h1 {
+    font-size: 2.5rem;
+    color: #ff41f8;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+  
+  .intro-text {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+    
+    p {
+      margin-bottom: 1rem;
+    }
+  }
+  
+  .start-button {
+    margin-top: 2rem;
+    
+    .btn {
+      display: inline-block;
+      background: linear-gradient(90deg, #ff41f8, #cc26d5);
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}
