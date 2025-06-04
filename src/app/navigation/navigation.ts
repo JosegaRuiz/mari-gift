@@ -15,6 +15,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
         <a [routerLink]="['/game']" routerLinkActive="active">Juego</a>
         <a [routerLink]="['/store']" routerLinkActive="active">Tienda</a>
         <a [routerLink]="['/progress']" routerLinkActive="active">Progreso</a>
+        <a [routerLink]="['/rules']" routerLinkActive="active">Reglas</a>
       </div>
     </nav>
   `,

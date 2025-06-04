@@ -20,8 +20,8 @@ interface Level {
 export class Game implements OnInit, OnDestroy {
   // Configuración del juego
   maricoins: number = 0;
-  vowelPrice: number = 15;
-  consonantPrice: number = 10;
+  vowelPrice: number = 30;
+  consonantPrice: number = 15;
   currentLevel: number = 1;
   totalLevels: number = 5;
   
@@ -181,7 +181,7 @@ export class Game implements OnInit, OnDestroy {
     } else {
       // Respuesta incorrecta
       this.message = 'Respuesta incorrecta. Inténtalo de nuevo.';
-      this.gameService.updateMaricoins(-5); // Penalización por error
+      this.gameService.updateMaricoins(-10); // Penalización por error
     }
     
     this.guessInput = '';

@@ -16,8 +16,9 @@ import { RouterLink } from '@angular/router';
         <p>¡Vamos a empezar esta aventura juntos!</p>
       </div>
       
-      <div class="start-button">
-        <a [routerLink]="['/game']" class="btn">Comenzar Juego</a>
+      <div class="buttons">
+        <a [routerLink]="['/game']" class="btn btn-primary">Comenzar Juego</a>
+        <a [routerLink]="['/rules']" class="btn btn-secondary">Ver Reglas</a>
       </div>
     </div>
   `,

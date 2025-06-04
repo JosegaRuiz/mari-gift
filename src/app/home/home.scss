@@ -24,13 +24,14 @@
     }
   }
   
-  .start-button {
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
     margin-top: 2rem;
     
     .btn {
       display: inline-block;
-      background: linear-gradient(90deg, #ff41f8, #cc26d5);
-      color: white;
       padding: 0.8rem 2rem;
       border-radius: 30px;
       text-decoration: none;
@@ -40,6 +41,17 @@
       &:hover {
         transform: translateY(-3px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      
+      &.btn-primary {
+        background: linear-gradient(90deg, #ff41f8, #cc26d5);
+        color: white;
+      }
+      
+      &.btn-secondary {
+        background: white;
+        color: #ff41f8;
+        border: 2px solid #ff41f8;
       }
     }
   }
