@@ -94,61 +94,93 @@ export class Game implements OnInit, OnDestroy {
     return found;
   }
   
+  // Variables para la entrada de letras
+  letterInput: string = '';
+  
   buyVowel() {
+    if (!this.letterInput) {
+      this.message = 'Por favor, introduce una vocal (A, E, I, O, U).';
+      return;
+    }
+    
+    const letter = this.letterInput.toUpperCase();
+    const vowels = ['A', 'E', 'I', 'O', 'U'];
+    
+    if (!vowels.includes(letter)) {
+      this.message = 'Por favor, introduce una vocal válida (A, E, I, O, U).';
+      return;
+    }
+    
+    if (this.displayWord.includes(letter)) {
+      this.message = `La letra ${letter} ya ha sido desbloqueada.`;
+      return;
+    }
+    
     if (this.maricoins >= this.vowelPrice) {
-      const vowels = ['A', 'E', 'I', 'O', 'U'];
-      const availableVowels = vowels.filter(v => 
-        this.currentWord.includes(v) && 
-        !this.displayWord.includes(v)
-      );
-      
-      if (availableVowels.length > 0) {
-        const randomVowel = availableVowels[Math.floor(Math.random() * availableVowels.length)];
+      if (this.currentWord.includes(letter)) {
         this.gameService.updateMaricoins(-this.vowelPrice);
         
         // Desbloquear la letra en el servicio
-        this.gameService.unlockLetter(randomVowel);
+        this.gameService.unlockLetter(letter);
         
         // Actualizar la visualización
-        const found = this.revealLetter(randomVowel);
-        
-        if (found) {
-          this.message = `¡Has desbloqueado la letra ${randomVowel}!`;
-        } else {
-          this.message = 'No se encontró ninguna vocal nueva.';
-        }
+        this.revealLetter(letter);
+        this.message = `¡Has desbloqueado la letra ${letter}!`;
       } else {
-        this.message = 'No hay más vocales para desbloquear.';
+        this.gameService.updateMaricoins(-this.vowelPrice);
+        this.message = `La letra ${letter} no está en la palabra. Has perdido ${this.vowelPrice} MariCoins.`;
       }
+      
+      // Limpiar el input
+      this.letterInput = '';
+    } else {
+      this.message = `No tienes suficientes MariCoins. Necesitas ${this.vowelPrice} MariCoins.`;
     }
   }
   
   buyConsonant() {
+    if (!this.letterInput) {
+      this.message = 'Por favor, introduce una consonante.';
+      return;
+    }
+    
+    const letter = this.letterInput.toUpperCase();
+    const vowels = ['A', 'E', 'I', 'O', 'U'];
+    
+    if (vowels.includes(letter)) {
+      this.message = 'Has introducido una vocal. Por favor, introduce una consonante.';
+      return;
+    }
+    
+    if (!/^[A-Z]$/.test(letter)) {
+      this.message = 'Por favor, introduce una letra válida.';
+      return;
+    }
+    
+    if (this.displayWord.includes(letter)) {
+      this.message = `La letra ${letter} ya ha sido desbloqueada.`;
+      return;
+    }
+    
     if (this.maricoins >= this.consonantPrice) {
-      const consonants = 'BCDFGHJKLMNPQRSTVWXYZ'.split('');
-      const availableConsonants = consonants.filter(c => 
-        this.currentWord.includes(c) && 
-        !this.displayWord.includes(c)
-      );
-      
-      if (availableConsonants.length > 0) {
-        const randomConsonant = availableConsonants[Math.floor(Math.random() * availableConsonants.length)];
+      if (this.currentWord.includes(letter)) {
         this.gameService.updateMaricoins(-this.consonantPrice);
         
         // Desbloquear la letra en el servicio
-        this.gameService.unlockLetter(randomConsonant);
+        this.gameService.unlockLetter(letter);
         
         // Actualizar la visualización
-        const found = this.revealLetter(randomConsonant);
-        
-        if (found) {
-          this.message = `¡Has desbloqueado la letra ${randomConsonant}!`;
-        } else {
-          this.message = 'No se encontró ninguna consonante nueva.';
-        }
+        this.revealLetter(letter);
+        this.message = `¡Has desbloqueado la letra ${letter}!`;
       } else {
-        this.message = 'No hay más consonantes para desbloquear.';
+        this.gameService.updateMaricoins(-this.consonantPrice);
+        this.message = `La letra ${letter} no está en la palabra. Has perdido ${this.consonantPrice} MariCoins.`;
       }
+      
+      // Limpiar el input
+      this.letterInput = '';
+    } else {
+      this.message = `No tienes suficientes MariCoins. Necesitas ${this.consonantPrice} MariCoins.`;
     }
   }
   

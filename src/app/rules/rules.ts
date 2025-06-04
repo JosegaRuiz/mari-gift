@@ -19,11 +19,13 @@ import { RouterLink } from '@angular/router';
         <ul>
           <li>En cada nivel tendrás que adivinar una o varias palabra/s oculta/s.</li>
           <li>Podrás recibir pistas para ayudarte a descubrir la/s palabra/s.</li>
-          <li>Puedes comprar letras usando tus MariCoins:</li>
+          <li>Puedes comprar letras específicas usando tus MariCoins:</li>
           <ul>
             <li>Vocales: 30 MariCoins</li>
             <li>Consonantes: 10 MariCoins</li>
           </ul>
+          <li>Si la letra que compras está en la palabra, se revelará en todas sus posiciones.</li>
+          <li>Si la letra no está en la palabra, perderás igualmente tus MariCoins.</li>
           <li>Cuando creas saber la respuesta, escríbela y compruébala.</li>
           <li>Si aciertas, ganarás 20 MariCoins y avanzarás al siguiente nivel.</li>
           <li>Si fallas, perderás 10 MariCoins.</li>

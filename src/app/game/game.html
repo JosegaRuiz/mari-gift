@@ -25,6 +25,10 @@
   </div>
 
   <div class="actions">
+    <div class="letter-input-container">
+      <input type="text" [(ngModel)]="letterInput" placeholder="Letra" class="letter-input" maxlength="1">
+    </div>
+    
     <div class="buy-letters">
       <button class="btn btn-vowel" (click)="buyVowel()" [disabled]="maricoins < vowelPrice">
         Comprar vocal ({{ vowelPrice }} coins)
