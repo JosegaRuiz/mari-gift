@@ -1,1 +1,65 @@
-<p>progress works!</p>
+<div class="progress-container">
+  <h1>Tu Progreso</h1>
+  
+  <div class="stats-overview">
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-value">{{ maricoins }}</div>
+      <div class="stat-label">MariCoins</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-value">{{ currentLevel }}/{{ totalLevels }}</div>
+      <div class="stat-label">Nivel Actual</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-value">{{ completedLevels }}</div>
+      <div class="stat-label">Niveles Completados</div>
+    </div>
+  </div>
+  
+  <div class="level-progress">
+    <h2>Progreso por Niveles</h2>
+    
+    <div class="level-list">
+      <div *ngFor="let level of levels; let i = index" class="level-item" [class.completed]="level.completed" [class.current]="i + 1 === currentLevel">
+        <div class="level-number">{{ i + 1 }}</div>
+        <div class="level-details">
+          <div class="level-name">{{ level.name }}</div>
+          <div class="level-hint" *ngIf="level.completed || i + 1 === currentLevel">{{ level.hint }}</div>
+          <div class="level-status">
+            <span *ngIf="level.completed">✅ Completado</span>
+            <span *ngIf="i + 1 === currentLevel">🔄 En progreso</span>
+            <span *ngIf="!level.completed && i + 1 !== currentLevel">🔒 Bloqueado</span>
+          </div>
+        </div>
+        <div class="level-letters" *ngIf="level.completed || i + 1 === currentLevel">
+          <span *ngFor="let letter of level.word.split('')" class="letter" [class.revealed]="isLetterRevealed(i, letter)">
+            {{ isLetterRevealed(i, letter) ? letter : '_' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="achievements">
+    <h2>Logros</h2>
+    
+    <div class="achievement-list">
+      <div *ngFor="let achievement of achievements" class="achievement-item" [class.unlocked]="achievement.unlocked">
+        <div class="achievement-icon">{{ achievement.icon }}</div>
+        <div class="achievement-details">
+          <div class="achievement-name">{{ achievement.name }}</div>
+          <div class="achievement-description">{{ achievement.description }}</div>
+        </div>
+        <div class="achievement-status">
+          <span *ngIf="achievement.unlocked">Desbloqueado</span>
+          <span *ngIf="!achievement.unlocked">Bloqueado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,40 @@
-<p>store works!</p>
+<div class="store-container">
+  <h1>Tienda de MariCoins</h1>
+  
+  <div class="balance">
+    <div class="maricoins">
+      <span class="coin-icon">💰</span>
+      <span class="coin-count">{{ maricoins }}</span> MariCoins
+    </div>
+  </div>
+  
+  <div class="store-items">
+    <div class="store-item" *ngFor="let item of storeItems">
+      <div class="item-info">
+        <h3>{{ item.name }}</h3>
+        <p>{{ item.description }}</p>
+      </div>
+      <div class="item-purchase">
+        <span class="item-price">{{ item.price }} MariCoins</span>
+        <button class="btn-buy" [disabled]="maricoins < item.price" (click)="purchaseItem(item)">
+          Comprar
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="daily-bonus">
+    <h2>Bonus Diario</h2>
+    <p>Vuelve mañana para recibir más MariCoins gratis.</p>
+    <div class="bonus-timer">
+      <p>Próximo bonus disponible en: {{ nextBonusTime }}</p>
+    </div>
+    <button class="btn-claim" [disabled]="!bonusAvailable" (click)="claimDailyBonus()">
+      {{ bonusAvailable ? 'Reclamar Bonus' : 'Bonus ya reclamado hoy' }}
+    </button>
+  </div>
+  
+  <div class="message" *ngIf="message">
+    {{ message }}
+  </div>
+</div>

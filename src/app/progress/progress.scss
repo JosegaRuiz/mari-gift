@@ -1,0 +1,198 @@
+.progress-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  
+  h1 {
+    color: #ff41f8;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  h2 {
+    color: #333;
+    margin: 2rem 0 1rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+}
+
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+  }
+  
+  .stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ff41f8;
+    margin-bottom: 0.5rem;
+  }
+  
+  .stat-label {
+    color: #666;
+    font-size: 0.9rem;
+  }
+}
+
+.level-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.level-item {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  
+  &.completed {
+    border-left: 4px solid #28a745;
+  }
+  
+  &.current {
+    border-left: 4px solid #ff41f8;
+    background-color: #fff9fe;
+  }
+  
+  .level-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    font-weight: bold;
+    margin-right: 1rem;
+    
+    .completed & {
+      background-color: #28a745;
+      color: white;
+    }
+    
+    .current & {
+      background-color: #ff41f8;
+      color: white;
+    }
+  }
+  
+  .level-details {
+    flex: 1;
+  }
+  
+  .level-name {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+  }
+  
+  .level-hint {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  
+  .level-status {
+    font-size: 0.8rem;
+    
+    .completed & {
+      color: #28a745;
+    }
+    
+    .current & {
+      color: #ff41f8;
+    }
+  }
+  
+  .level-letters {
+    display: flex;
+    gap: 0.25rem;
+    margin-left: auto;
+    
+    .letter {
+      display: inline-block;
+      width: 1.5rem;
+      height: 2rem;
+      line-height: 2rem;
+      text-align: center;
+      font-weight: bold;
+      border-bottom: 2px solid #ddd;
+      
+      &.revealed {
+        color: #ff41f8;
+      }
+    }
+  }
+}
+
+.achievement-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.achievement-item {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  opacity: 0.7;
+  
+  &.unlocked {
+    background-color: #f0f9ff;
+    opacity: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .achievement-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+  }
+  
+  .achievement-details {
+    flex: 1;
+  }
+  
+  .achievement-name {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+  }
+  
+  .achievement-description {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .achievement-status {
+    font-size: 0.8rem;
+    font-weight: bold;
+    
+    .unlocked & {
+      color: #28a745;
+    }
+  }
+}

@@ -1,1 +1,46 @@
-<p>game works!</p>
+<div class="game-container">
+  <div class="game-header">
+    <h1>Adivina la palabra</h1>
+    <div class="game-stats">
+      <div class="maricoins">
+        <span class="coin-icon">💰</span>
+        <span class="coin-count">{{ maricoins }}</span>
+      </div>
+      <div class="level">
+        Fase: {{ currentLevel }}/{{ totalLevels }}
+      </div>
+    </div>
+  </div>
+
+  <div class="word-container">
+    <div class="word-display">
+      <span *ngFor="let letter of displayWord" class="letter" [class.revealed]="letter !== '_'">
+        {{ letter }}
+      </span>
+    </div>
+  </div>
+
+  <div class="hint-container" *ngIf="hint">
+    <p class="hint-text">Pista: {{ hint }}</p>
+  </div>
+
+  <div class="actions">
+    <div class="buy-letters">
+      <button class="btn btn-vowel" (click)="buyVowel()" [disabled]="maricoins < vowelPrice">
+        Comprar vocal ({{ vowelPrice }} coins)
+      </button>
+      <button class="btn btn-consonant" (click)="buyConsonant()" [disabled]="maricoins < consonantPrice">
+        Comprar consonante ({{ consonantPrice }} coins)
+      </button>
+    </div>
+    
+    <div class="guess-container">
+      <input type="text" [(ngModel)]="guessInput" placeholder="Escribe tu respuesta..." class="guess-input">
+      <button class="btn btn-guess" (click)="checkGuess()">Comprobar</button>
+    </div>
+  </div>
+
+  <div class="message" *ngIf="message">
+    {{ message }}
+  </div>
+</div>

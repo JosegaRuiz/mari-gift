@@ -6,7 +6,12 @@ import { Navigation } from './navigation/navigation';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, Navigation],
-  templateUrl: './app.html',
+  template: `
+    <app-navigation></app-navigation>
+    <div class="container">
+      <router-outlet></router-outlet>
+    </div>
+  `,
   styleUrl: './app.scss'
 })
 export class App {
