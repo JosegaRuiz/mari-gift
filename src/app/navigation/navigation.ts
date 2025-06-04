@@ -5,9 +5,19 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   selector: 'app-navigation',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
-  templateUrl: './navigation.html',
+  template: `
+    <nav class="navigation">
+      <div class="logo">
+        <a [routerLink]="['/home']">MariGift</a>
+      </div>
+      <div class="nav-links">
+        <a [routerLink]="['/home']" routerLinkActive="active">Inicio</a>
+        <a [routerLink]="['/game']" routerLinkActive="active">Juego</a>
+        <a [routerLink]="['/store']" routerLinkActive="active">Tienda</a>
+        <a [routerLink]="['/progress']" routerLinkActive="active">Progreso</a>
+      </div>
+    </nav>
+  `,
   styleUrl: './navigation.scss'
 })
-export class Navigation {
-
-}
+export class Navigation {}

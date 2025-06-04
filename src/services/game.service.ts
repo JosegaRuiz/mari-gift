@@ -137,8 +137,15 @@ export class GameService {
     return false;
   }
 
+  // Verificar si estamos en el navegador
+  private isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  }
+
   // Persistencia local
   private saveGameState(): void {
+    if (!this.isBrowser()) return;
+    
     const gameState = {
       maricoins: this.maricoins,
       currentLevel: this.currentLevel,
@@ -149,6 +156,8 @@ export class GameService {
   }
 
   private loadGameState(): void {
+    if (!this.isBrowser()) return;
+    
     const savedState = localStorage.getItem('mariGiftGameState');
     
     if (savedState) {

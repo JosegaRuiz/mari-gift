@@ -15,5 +15,5 @@ import { Navigation } from './navigation/navigation';
   styleUrl: './app.scss'
 })
 export class App {
-  protected title = 'Mari-Gift';
+  title = 'Mari-Gift';
 }

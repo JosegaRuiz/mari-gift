@@ -85,6 +85,12 @@ export class Store implements OnInit, OnDestroy {
   }
   
   checkDailyBonus() {
+    // Comprobar si estamos en el navegador
+    if (!this.isBrowser()) {
+      this.bonusAvailable = false;
+      return;
+    }
+    
     // Comprobar si el usuario ya ha reclamado el bonus hoy
     const lastClaimDate = localStorage.getItem('lastBonusClaim');
     
@@ -125,6 +131,11 @@ export class Store implements OnInit, OnDestroy {
     }
   }
   
+  // Verificar si estamos en el navegador
+  private isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  }
+  
   claimDailyBonus() {
     if (this.bonusAvailable) {
       const bonusAmount = 25;
@@ -133,7 +144,9 @@ export class Store implements OnInit, OnDestroy {
       this.message = `¡Has reclamado tu bonus diario de ${bonusAmount} MariCoins!`;
       
       // Guardar la fecha del último reclamo
-      localStorage.setItem('lastBonusClaim', new Date().toISOString());
+      if (this.isBrowser()) {
+        localStorage.setItem('lastBonusClaim', new Date().toISOString());
+      }
       
       // Actualizar el temporizador
       this.updateBonusTimer();
