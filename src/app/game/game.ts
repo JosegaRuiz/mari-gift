@@ -95,6 +95,16 @@ export class Game implements OnInit, OnDestroy {
     return this.currentLevel.hints.slice(0, this.currentLevel.unlockedHints);
   }
   
+  // Obtener un array para mostrar los espacios restantes de palabras a adivinar
+  get remainingGuessesArray(): number[] {
+    if (!this.currentLevel || !this.currentLevel.requiredGuesses || !this.currentLevel.guessedWords) {
+      return [];
+    }
+    
+    const remaining = this.currentLevel.requiredGuesses - this.currentLevel.guessedWords.length;
+    return Array(remaining > 0 ? remaining : 0).fill(0);
+  }
+  
   // Comprar una pista
   buyHint() {
     if (this.maricoins >= 20) { // Precio de una pista
@@ -230,24 +240,50 @@ export class Game implements OnInit, OnDestroy {
     
     if (result) {
       // Respuesta correcta
-      this.message = '¡Correcto! ¡Has adivinado la frase!';
-      
-      // Revelar todas las palabras
-      this.loadCurrentLevel();
-      
-      // Comprobar si hay más niveles
-      if (this.gameService.currentLevel) {
+      if (this.currentLevel?.requiredGuesses) {
+        // Si es un nivel de tipo lista
+        this.message = '¡Correcto! Has adivinado una palabra.';
+        
+        // Comprobar si se ha completado el nivel
+        if (this.currentLevel.guessedWords && 
+            this.currentLevel.guessedWords.length >= this.currentLevel.requiredGuesses) {
+          this.message = '¡Felicidades! Has adivinado todas las palabras necesarias.';
+          
+          // Comprobar si hay más niveles
+          setTimeout(() => {
+            this.guessInput = '';
+            this.message = `¡Avanzando al siguiente nivel!`;
+          }, 2000);
+        }
+      } else if (this.currentLevel?.isPhrase) {
+        // Si es una frase
+        this.message = '¡Correcto! ¡Has adivinado la frase!';
+        
+        // Comprobar si hay más niveles
         setTimeout(() => {
           this.guessInput = '';
           this.message = `¡Avanzando al siguiente nivel!`;
         }, 2000);
       } else {
-        // Si es el último nivel de la última fase, redirigir a la página de victoria
-        if (this.gameService.completedPhases === this.gameService.totalPhases) {
-          setTimeout(() => {
-            this.router.navigate(['/victory']);
-          }, 2000);
-        }
+        // Si es una palabra independiente
+        this.message = '¡Correcto! ¡Has adivinado la palabra!';
+        
+        // Comprobar si hay más niveles
+        setTimeout(() => {
+          this.guessInput = '';
+          this.message = `¡Avanzando al siguiente nivel!`;
+        }, 2000);
+      }
+      
+      // Revelar todas las palabras
+      this.loadCurrentLevel();
+      
+      // Si es el último nivel de la última fase, redirigir a la página de victoria
+      if (this.gameService.completedPhases === this.gameService.totalPhases && 
+          !this.gameService.currentLevel) {
+        setTimeout(() => {
+          this.router.navigate(['/victory']);
+        }, 2000);
       }
     } else {
       // Respuesta incorrecta

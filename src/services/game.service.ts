@@ -16,6 +16,8 @@ export interface GameLevel {
   words: GameWord[];
   isPhrase: boolean; // Si es una frase (palabras dependientes) o palabras independientes
   completed: boolean;
+  guessedWords?: string[]; // Palabras ya adivinadas (para niveles de tipo lista)
+  requiredGuesses?: number; // Número de aciertos requeridos para completar el nivel
 }
 
 export interface GamePhase {
@@ -242,16 +244,37 @@ export class GameService {
       // Si son palabras independientes, comprobamos si alguna coincide
       for (let i = 0; i < level.words.length; i++) {
         if (normalizedGuess === level.words[i].text) {
-          // Marcar la palabra como completada (podríamos añadir un campo para esto)
-          this.updateMaricoins(5); // Recompensa por adivinar una palabra
-          
-          // Si todas las palabras están adivinadas, completar el nivel
-          const allWordsGuessed = true; // Aquí habría que implementar la lógica
-          if (allWordsGuessed) {
+          // Verificar si es un nivel de tipo lista (con requiredGuesses)
+          if (level.requiredGuesses !== undefined) {
+            // Inicializar el array de palabras adivinadas si no existe
+            if (!level.guessedWords) {
+              level.guessedWords = [];
+            }
+            
+            // Verificar si la palabra ya ha sido adivinada
+            if (level.guessedWords.includes(level.words[i].text)) {
+              return false; // La palabra ya fue adivinada
+            }
+            
+            // Añadir la palabra a la lista de adivinadas
+            level.guessedWords.push(level.words[i].text);
+            this.updateMaricoins(5); // Recompensa por adivinar una palabra
+            
+            // Guardar el estado actualizado
+            this.saveGameState();
+            
+            // Comprobar si se ha alcanzado el número requerido de aciertos
+            if (level.guessedWords.length >= level.requiredGuesses) {
+              this.completeCurrentLevel();
+            }
+            
+            return true;
+          } else {
+            // Comportamiento normal para palabras independientes
+            this.updateMaricoins(5); // Recompensa por adivinar una palabra
             this.completeCurrentLevel();
+            return true;
           }
-          
-          return true;
         }
       }
     }
@@ -410,7 +433,43 @@ export class GameService {
             ],
             isPhrase: true,
             completed: false
-          }
+          },
+          {
+            id: "1.2",
+            name: "Nivel 2: Mis favoritos",
+            description: "Sé que suena egocéntrico, pero es más bien confianza en ti, con lo que para avanzar quiero proponerte que trates de adivinar 7 de mis películas, videojuegos, animes o series favoritas.",
+            hints: [
+              "Prueba con alguna que te haya obligado a ver"
+            ],
+            unlockedHints: 0,
+            words: [
+              { text: "ONE PIECE", unlockedLetters: [] },
+              { text: "THE LAST OF US", unlockedLetters: [] },
+              { text: "MR ROBOT", unlockedLetters: [] },
+              { text: "ATTACK ON TITANS", unlockedLetters: [] },
+              { text: "BLEACH", unlockedLetters: [] },
+              { text: "DIGIMON", unlockedLetters: [] },
+              { text: "SHINGEKI NO KYOJIN", unlockedLetters: [] },
+              { text: "COMO CONOCI A VUESTRA MADRE", unlockedLetters: [] },
+              { text: "KINGDOM HEARTS", unlockedLetters: [] },
+              { text: "DRAGON BALL", unlockedLetters: [] },
+              { text: "POKEMON", unlockedLetters: [] },
+              { text: "MONSTER HUNTER", unlockedLetters: [] },
+              { text: "IT TAKES TWO", unlockedLetters: [] },
+              { text: "HOUSE", unlockedLetters: [] },
+              { text: "LA VIDA ES BELLA", unlockedLetters: [] },
+              { text: "CALL OF DUTY", unlockedLetters: [] },
+              { text: "HARRY POTTER", unlockedLetters: [] },
+              { text: "DEATH NOTE", unlockedLetters: [] },
+              { text: "NARUTO", unlockedLetters: [] },
+              { text: "ONE PUNCH MAN", unlockedLetters: [] },
+              { text: "SAKURA", unlockedLetters: [] },
+            ],
+            isPhrase: false,
+            completed: false,
+            guessedWords: [],
+            requiredGuesses: 7
+          },
         ],
         completed: false
       },

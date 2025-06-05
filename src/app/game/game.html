@@ -23,6 +23,19 @@
     </ul>
   </div>
 
+  <!-- Mostrar palabras adivinadas para niveles de tipo lista -->
+  <div class="guessed-words-container" *ngIf="currentLevel?.requiredGuesses && currentLevel?.guessedWords">
+    <h3>Palabras adivinadas ({{ currentLevel?.guessedWords?.length || 0 }}/{{ currentLevel?.requiredGuesses || 0 }}):</h3>
+    <div class="guessed-words-list">
+      <div class="guessed-word" *ngFor="let word of currentLevel?.guessedWords || []">
+        {{ word }}
+      </div>
+      <div class="guessed-word empty" *ngFor="let i of remainingGuessesArray">
+        ?
+      </div>
+    </div>
+  </div>
+
   <div class="word-container">
     <div class="word-display" *ngIf="currentLevel?.isPhrase">
       <div class="word" *ngFor="let word of displayWords; let i = index">
@@ -32,7 +45,7 @@
       </div>
     </div>
     
-    <div class="word-display" *ngIf="!currentLevel?.isPhrase">
+    <div class="word-display" *ngIf="!currentLevel?.isPhrase && !currentLevel?.requiredGuesses">
       <div class="word" *ngFor="let word of displayWords; let i = index" 
            [class.selected]="selectedWordIndex === i"
            (click)="selectWord(i)">
@@ -44,11 +57,11 @@
   </div>
 
   <div class="actions">
-    <div class="letter-input-container">
+    <div class="letter-input-container" *ngIf="!currentLevel?.requiredGuesses">
       <input type="text" [(ngModel)]="letterInput" placeholder="Letra" class="letter-input" maxlength="1">
     </div>
     
-    <div class="buy-letters">
+    <div class="buy-letters" *ngIf="!currentLevel?.requiredGuesses">
       <button class="btn btn-vowel" (click)="buyVowel()" [disabled]="maricoins < vowelPrice">
         Comprar vocal ({{ vowelPrice }} coins)
       </button>
