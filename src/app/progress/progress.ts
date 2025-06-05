@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GameService, GameLevel } from '../../services/game.service';
+import { GameService, GamePhase, GameLevel } from '../../services/game.service';
 import { Subscription } from 'rxjs';
 
 interface Achievement {
@@ -20,10 +20,13 @@ interface Achievement {
 })
 export class Progress implements OnInit, OnDestroy {
   maricoins: number = 0;
-  currentLevel: number = 1;
-  totalLevels: number = 5;
+  currentPhaseId: number = 1;
+  currentLevelId: string = "1.1";
+  totalPhases: number = 0;
+  totalLevels: number = 0;
+  completedPhases: number = 0;
   completedLevels: number = 0;
-  levels: any[] = [];
+  phases: GamePhase[] = [];
   
   achievements: Achievement[] = [
     {
@@ -50,14 +53,14 @@ export class Progress implements OnInit, OnDestroy {
     {
       id: 4,
       name: 'Mitad del Camino',
-      description: 'Llegaste al nivel 3',
+      description: 'Completaste la primera fase',
       icon: '🏆',
       unlocked: false
     },
     {
       id: 5,
       name: 'Maestro del Juego',
-      description: 'Completaste todos los niveles',
+      description: 'Completaste todas las fases',
       icon: '👑',
       unlocked: false
     }
@@ -75,21 +78,27 @@ export class Progress implements OnInit, OnDestroy {
         this.updateAchievements();
       }),
       
-      this.gameService.currentLevel$.subscribe((level: number) => {
-        this.currentLevel = level;
+      this.gameService.currentPhaseId$.subscribe((phaseId: number) => {
+        this.currentPhaseId = phaseId;
         this.updateAchievements();
       }),
       
-      this.gameService.levels$.subscribe((levels: GameLevel[]) => {
-        this.levels = levels;
-        this.updateCompletedLevels();
+      this.gameService.currentLevelId$.subscribe((levelId: string) => {
+        this.currentLevelId = levelId;
+        this.updateAchievements();
+      }),
+      
+      this.gameService.phases$.subscribe((phases: GamePhase[]) => {
+        this.phases = phases;
+        this.updateProgress();
         this.updateAchievements();
       })
     );
     
+    this.totalPhases = this.gameService.totalPhases;
     this.totalLevels = this.gameService.totalLevels;
-    this.levels = this.gameService.levels;
-    this.updateCompletedLevels();
+    this.phases = this.gameService.phases;
+    this.updateProgress();
     this.updateAchievements();
   }
   
@@ -98,8 +107,9 @@ export class Progress implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   
-  updateCompletedLevels() {
-    this.completedLevels = this.levels.filter(level => level.completed).length;
+  updateProgress() {
+    this.completedPhases = this.gameService.completedPhases;
+    this.completedLevels = this.gameService.completedLevels;
   }
   
   updateAchievements() {
@@ -112,19 +122,33 @@ export class Progress implements OnInit, OnDestroy {
     this.achievements[1].unlocked = this.maricoins >= 100;
     
     // Mitad del camino
-    this.achievements[3].unlocked = this.currentLevel >= 3;
+    this.achievements[3].unlocked = this.completedPhases >= 1;
     
     // Maestro del juego
-    this.achievements[4].unlocked = this.completedLevels >= this.totalLevels;
+    this.achievements[4].unlocked = this.completedPhases >= this.totalPhases;
     
     // Lingüista (este es más complejo y requeriría lógica adicional)
     // Por ahora lo dejamos como está
   }
   
-  isLetterRevealed(levelIndex: number, letter: string): boolean {
-    if (levelIndex >= 0 && levelIndex < this.levels.length) {
-      return this.levels[levelIndex].unlockedLetters.includes(letter);
+  // Obtener el nivel por su ID
+  getLevel(phaseId: number, levelId: string): GameLevel | undefined {
+    const phase = this.phases.find(p => p.id === phaseId);
+    if (phase) {
+      return phase.levels.find(l => l.id === levelId);
     }
-    return false;
+    return undefined;
+  }
+  
+  // Verificar si un nivel está completado
+  isLevelCompleted(phaseId: number, levelId: string): boolean {
+    const level = this.getLevel(phaseId, levelId);
+    return level ? level.completed : false;
+  }
+  
+  // Verificar si una fase está completada
+  isPhaseCompleted(phaseId: number): boolean {
+    const phase = this.phases.find(p => p.id === phaseId);
+    return phase ? phase.completed : false;
   }
 }

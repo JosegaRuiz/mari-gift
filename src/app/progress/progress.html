@@ -9,37 +9,49 @@
     </div>
     
     <div class="stat-card">
-      <div class="stat-icon">🏆</div>
-      <div class="stat-value">{{ currentLevel }}/{{ totalLevels }}</div>
-      <div class="stat-label">Nivel Actual</div>
+      <div class="stat-icon">📚</div>
+      <div class="stat-value">{{ completedPhases }}/{{ totalPhases }}</div>
+      <div class="stat-label">Fases Completadas</div>
     </div>
     
     <div class="stat-card">
       <div class="stat-icon">⭐</div>
-      <div class="stat-value">{{ completedLevels }}</div>
+      <div class="stat-value">{{ completedLevels }}/{{ totalLevels }}</div>
       <div class="stat-label">Niveles Completados</div>
     </div>
   </div>
   
-  <div class="level-progress">
-    <h2>Progreso por Niveles</h2>
+  <div class="phase-progress">
+    <h2>Progreso por Fases</h2>
     
-    <div class="level-list">
-      <div *ngFor="let level of levels; let i = index" class="level-item" [class.completed]="level.completed" [class.current]="i + 1 === currentLevel">
-        <div class="level-number">{{ i + 1 }}</div>
-        <div class="level-details">
-          <div class="level-name">{{ level.name }}</div>
-          <div class="level-hint" *ngIf="level.completed || i + 1 === currentLevel">{{ level.hint }}</div>
-          <div class="level-status">
-            <span *ngIf="level.completed">✅ Completado</span>
-            <span *ngIf="i + 1 === currentLevel">🔄 En progreso</span>
-            <span *ngIf="!level.completed && i + 1 !== currentLevel">🔒 Bloqueado</span>
+    <div class="phase-list">
+      <div *ngFor="let phase of phases" class="phase-item" [class.completed]="isPhaseCompleted(phase.id)" [class.current]="phase.id === currentPhaseId">
+        <div class="phase-header">
+          <div class="phase-number">Fase {{ phase.id }}</div>
+          <div class="phase-name">{{ phase.name }}</div>
+          <div class="phase-status">
+            <span *ngIf="isPhaseCompleted(phase.id)">✅ Completada</span>
+            <span *ngIf="phase.id === currentPhaseId && !isPhaseCompleted(phase.id)">🔄 En progreso</span>
+            <span *ngIf="phase.id > currentPhaseId">🔒 Bloqueada</span>
           </div>
         </div>
-        <div class="level-letters" *ngIf="level.completed || i + 1 === currentLevel">
-          <span *ngFor="let letter of level.word.split('')" class="letter" [class.revealed]="isLetterRevealed(i, letter)">
-            {{ isLetterRevealed(i, letter) ? letter : '_' }}
-          </span>
+        
+        <div class="phase-description">{{ phase.description }}</div>
+        
+        <div class="level-list">
+          <div *ngFor="let level of phase.levels" class="level-item" 
+               [class.completed]="isLevelCompleted(phase.id, level.id)" 
+               [class.current]="level.id === currentLevelId">
+            <div class="level-number">{{ level.id }}</div>
+            <div class="level-details">
+              <div class="level-name">{{ level.name }}</div>
+              <div class="level-status">
+                <span *ngIf="isLevelCompleted(phase.id, level.id)">✅ Completado</span>
+                <span *ngIf="level.id === currentLevelId">🔄 En progreso</span>
+                <span *ngIf="!isLevelCompleted(phase.id, level.id) && level.id !== currentLevelId">🔒 Bloqueado</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

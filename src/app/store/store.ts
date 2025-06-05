@@ -152,11 +152,18 @@ export class Store implements OnInit, OnDestroy {
       // Aplicar el efecto del item según su ID
       switch(item.id) {
         case 1: // Pista Extra
-          // Aquí implementaríamos la lógica para mostrar una pista adicional
-          this.message = `¡Has comprado una pista extra! Revisa el nivel actual.`;
+          if (this.gameService.unlockHint()) {
+            this.message = `¡Has comprado una pista extra!`;
+          } else {
+            this.message = `No hay más pistas disponibles para este nivel.`;
+          }
           break;
         case 4: // Saltar Nivel
-          if (this.gameService.currentLevel < this.gameService.totalLevels) {
+          // Verificar si hay un nivel actual y si no es el último
+          const currentPhase = this.gameService.currentPhase;
+          const currentLevel = this.gameService.currentLevel;
+          
+          if (currentPhase && currentLevel) {
             this.gameService.completeCurrentLevel();
             this.message = `¡Has avanzado al siguiente nivel!`;
           } else {
@@ -164,8 +171,6 @@ export class Store implements OnInit, OnDestroy {
           }
           break;
       }
-      
-      this.message = `¡Has comprado ${item.name}!`;
       
       setTimeout(() => {
         this.message = '';

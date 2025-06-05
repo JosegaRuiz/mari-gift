@@ -1,27 +1,46 @@
 <div class="game-container">
   <div class="game-header">
-    <h1>Adivina la palabra</h1>
+    <h1>{{ currentLevel?.name || 'Cargando...' }}</h1>
     <div class="game-stats">
       <div class="maricoins">
         <span class="coin-icon">💰</span>
         <span class="coin-count">{{ maricoins }}</span>
       </div>
       <div class="level">
-        Fase: {{ currentLevel }}/{{ totalLevels }}
+        Fase: {{ currentPhaseId }}.{{ currentLevelId.split('.')[1] }}
       </div>
     </div>
   </div>
 
-  <div class="word-container">
-    <div class="word-display">
-      <span *ngFor="let letter of displayWord" class="letter" [class.revealed]="letter !== '_'">
-        {{ letter }}
-      </span>
-    </div>
+  <div class="description-container" *ngIf="currentLevel">
+    <p class="description-text">{{ currentLevel.description }}</p>
   </div>
 
-  <div class="hint-container" *ngIf="hint">
-    <p class="hint-text">Pista: {{ hint }}</p>
+  <div class="hints-container" *ngIf="availableHints.length > 0">
+    <h3>Pistas:</h3>
+    <ul class="hints-list">
+      <li *ngFor="let hint of availableHints">{{ hint }}</li>
+    </ul>
+  </div>
+
+  <div class="word-container">
+    <div class="word-display" *ngIf="currentLevel?.isPhrase">
+      <div class="word" *ngFor="let word of displayWords; let i = index">
+        <span *ngFor="let letter of word.display" class="letter" [class.revealed]="letter !== '_'">
+          {{ letter }}
+        </span>
+      </div>
+    </div>
+    
+    <div class="word-display" *ngIf="!currentLevel?.isPhrase">
+      <div class="word" *ngFor="let word of displayWords; let i = index" 
+           [class.selected]="selectedWordIndex === i"
+           (click)="selectWord(i)">
+        <span *ngFor="let letter of word.display" class="letter" [class.revealed]="letter !== '_'">
+          {{ letter }}
+        </span>
+      </div>
+    </div>
   </div>
 
   <div class="actions">
@@ -35,6 +54,9 @@
       </button>
       <button class="btn btn-consonant" (click)="buyConsonant()" [disabled]="maricoins < consonantPrice">
         Comprar consonante ({{ consonantPrice }} coins)
+      </button>
+      <button class="btn btn-hint" (click)="buyHint()" [disabled]="maricoins < 20 || (currentLevel && currentLevel.unlockedHints >= currentLevel.hints.length)">
+        Comprar pista (20 coins)
       </button>
     </div>
     

@@ -1,15 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GameService, GameLevel } from '../../services/game.service';
+import { GameService, GamePhase, GameLevel, GameWord } from '../../services/game.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-
-interface Level {
-  word: string;
-  hint: string;
-  unlockedLetters: string[];
-}
 
 @Component({
   selector: 'app-game',
@@ -23,14 +17,18 @@ export class Game implements OnInit, OnDestroy {
   maricoins: number = 0;
   vowelPrice: number = 30;
   consonantPrice: number = 15;
-  currentLevel: number = 1;
-  totalLevels: number = 5;
   
   // Estado del juego
-  currentWord: string = '';
-  displayWord: string[] = [];
-  hint: string = '';
+  currentPhase: GamePhase | undefined;
+  currentLevel: GameLevel | undefined;
+  currentPhaseId: number = 1;
+  currentLevelId: string = "1.1";
+  selectedWordIndex: number = 0; // Para palabras independientes
+  
+  // Visualización
+  displayWords: { text: string, display: string[] }[] = [];
   guessInput: string = '';
+  letterInput: string = '';
   message: string = '';
   
   // Suscripciones
@@ -45,18 +43,22 @@ export class Game implements OnInit, OnDestroy {
         this.maricoins = coins;
       }),
       
-      this.gameService.currentLevel$.subscribe((level: number) => {
-        this.currentLevel = level;
-        this.loadLevel();
+      this.gameService.currentPhaseId$.subscribe((phaseId: number) => {
+        this.currentPhaseId = phaseId;
+        this.loadCurrentLevel();
       }),
       
-      this.gameService.levels$.subscribe(() => {
-        this.loadLevel();
+      this.gameService.currentLevelId$.subscribe((levelId: string) => {
+        this.currentLevelId = levelId;
+        this.loadCurrentLevel();
+      }),
+      
+      this.gameService.phases$.subscribe(() => {
+        this.loadCurrentLevel();
       })
     );
     
-    this.totalLevels = this.gameService.totalLevels;
-    this.loadLevel();
+    this.loadCurrentLevel();
   }
   
   ngOnDestroy() {
@@ -64,39 +66,48 @@ export class Game implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   
-  loadLevel() {
-    const levels = this.gameService.levels;
-    if (this.currentLevel > 0 && this.currentLevel <= levels.length) {
-      const gameLevel = levels[this.currentLevel - 1];
-      this.currentWord = gameLevel.word;
-      this.hint = gameLevel.hint;
-      
-      // Inicializar la palabra mostrada con guiones bajos
-      this.displayWord = Array(this.currentWord.length).fill('_');
-      
-      // Mostrar las letras desbloqueadas
-      gameLevel.unlockedLetters.forEach(letter => {
-        this.revealLetter(letter);
+  loadCurrentLevel() {
+    this.currentPhase = this.gameService.currentPhase;
+    this.currentLevel = this.gameService.currentLevel;
+    
+    if (this.currentLevel) {
+      // Inicializar la visualización de las palabras
+      this.displayWords = this.currentLevel.words.map(word => {
+        const display = Array(word.text.length).fill('_');
+        
+        // Mostrar las letras desbloqueadas
+        word.unlockedLetters.forEach(letter => {
+          for (let i = 0; i < word.text.length; i++) {
+            if (word.text[i] === letter) {
+              display[i] = letter;
+            }
+          }
+        });
+        
+        return { text: word.text, display };
       });
     }
   }
   
-  revealLetter(letter: string) {
-    letter = letter.toUpperCase();
-    let found = false;
-    
-    for (let i = 0; i < this.currentWord.length; i++) {
-      if (this.currentWord[i] === letter) {
-        this.displayWord[i] = letter;
-        found = true;
-      }
-    }
-    
-    return found;
+  // Obtener las pistas disponibles
+  get availableHints(): string[] {
+    if (!this.currentLevel) return [];
+    return this.currentLevel.hints.slice(0, this.currentLevel.unlockedHints);
   }
   
-  // Variables para la entrada de letras
-  letterInput: string = '';
+  // Comprar una pista
+  buyHint() {
+    if (this.maricoins >= 20) { // Precio de una pista
+      if (this.gameService.unlockHint()) {
+        this.gameService.updateMaricoins(-20);
+        this.message = '¡Has desbloqueado una nueva pista!';
+      } else {
+        this.message = 'No hay más pistas disponibles para este nivel.';
+      }
+    } else {
+      this.message = 'No tienes suficientes MariCoins para comprar una pista.';
+    }
+  }
   
   buyVowel() {
     if (!this.letterInput) {
@@ -112,24 +123,36 @@ export class Game implements OnInit, OnDestroy {
       return;
     }
     
-    if (this.displayWord.includes(letter)) {
-      this.message = `La letra ${letter} ya ha sido desbloqueada.`;
-      return;
-    }
-    
     if (this.maricoins >= this.vowelPrice) {
-      if (this.currentWord.includes(letter)) {
-        this.gameService.updateMaricoins(-this.vowelPrice);
-        
-        // Desbloquear la letra en el servicio
-        this.gameService.unlockLetter(letter);
-        
-        // Actualizar la visualización
-        this.revealLetter(letter);
-        this.message = `¡Has desbloqueado la letra ${letter}!`;
+      let found = false;
+      
+      // Si es una frase, buscamos en todas las palabras
+      if (this.currentLevel?.isPhrase) {
+        for (let i = 0; i < this.currentLevel.words.length; i++) {
+          if (this.currentLevel.words[i].text.includes(letter) && 
+              !this.currentLevel.words[i].unlockedLetters.includes(letter)) {
+            this.gameService.unlockLetter(i, letter);
+            found = true;
+          }
+        }
       } else {
-        this.gameService.updateMaricoins(-this.vowelPrice);
-        this.message = `La letra ${letter} no está en la palabra. Has perdido ${this.vowelPrice} MariCoins.`;
+        // Si son palabras independientes, solo en la palabra seleccionada
+        if (this.currentLevel && this.selectedWordIndex < this.currentLevel.words.length) {
+          const word = this.currentLevel.words[this.selectedWordIndex];
+          if (word.text.includes(letter) && !word.unlockedLetters.includes(letter)) {
+            this.gameService.unlockLetter(this.selectedWordIndex, letter);
+            found = true;
+          }
+        }
+      }
+      
+      this.gameService.updateMaricoins(-this.vowelPrice);
+      
+      if (found) {
+        this.message = `¡Has desbloqueado la vocal ${letter}!`;
+        this.loadCurrentLevel(); // Actualizar la visualización
+      } else {
+        this.message = `La vocal ${letter} no está en la palabra o ya ha sido desbloqueada. Has perdido ${this.vowelPrice} MariCoins.`;
       }
       
       // Limpiar el input
@@ -158,24 +181,36 @@ export class Game implements OnInit, OnDestroy {
       return;
     }
     
-    if (this.displayWord.includes(letter)) {
-      this.message = `La letra ${letter} ya ha sido desbloqueada.`;
-      return;
-    }
-    
     if (this.maricoins >= this.consonantPrice) {
-      if (this.currentWord.includes(letter)) {
-        this.gameService.updateMaricoins(-this.consonantPrice);
-        
-        // Desbloquear la letra en el servicio
-        this.gameService.unlockLetter(letter);
-        
-        // Actualizar la visualización
-        this.revealLetter(letter);
-        this.message = `¡Has desbloqueado la letra ${letter}!`;
+      let found = false;
+      
+      // Si es una frase, buscamos en todas las palabras
+      if (this.currentLevel?.isPhrase) {
+        for (let i = 0; i < this.currentLevel.words.length; i++) {
+          if (this.currentLevel.words[i].text.includes(letter) && 
+              !this.currentLevel.words[i].unlockedLetters.includes(letter)) {
+            this.gameService.unlockLetter(i, letter);
+            found = true;
+          }
+        }
       } else {
-        this.gameService.updateMaricoins(-this.consonantPrice);
-        this.message = `La letra ${letter} no está en la palabra. Has perdido ${this.consonantPrice} MariCoins.`;
+        // Si son palabras independientes, solo en la palabra seleccionada
+        if (this.currentLevel && this.selectedWordIndex < this.currentLevel.words.length) {
+          const word = this.currentLevel.words[this.selectedWordIndex];
+          if (word.text.includes(letter) && !word.unlockedLetters.includes(letter)) {
+            this.gameService.unlockLetter(this.selectedWordIndex, letter);
+            found = true;
+          }
+        }
+      }
+      
+      this.gameService.updateMaricoins(-this.consonantPrice);
+      
+      if (found) {
+        this.message = `¡Has desbloqueado la consonante ${letter}!`;
+        this.loadCurrentLevel(); // Actualizar la visualización
+      } else {
+        this.message = `La consonante ${letter} no está en la palabra o ya ha sido desbloqueada. Has perdido ${this.consonantPrice} MariCoins.`;
       }
       
       // Limpiar el input
@@ -191,29 +226,28 @@ export class Game implements OnInit, OnDestroy {
       return;
     }
     
-    if (this.guessInput.toUpperCase() === this.currentWord) {
+    const result = this.gameService.checkGuess(this.guessInput);
+    
+    if (result) {
       // Respuesta correcta
-      this.message = '¡Correcto! ¡Has adivinado la palabra!';
-      this.gameService.updateMaricoins(20); // Recompensa por adivinar
+      this.message = '¡Correcto! ¡Has adivinado la frase!';
       
-      // Revelar toda la palabra
-      this.displayWord = this.currentWord.split('');
-      
-      // Marcar el nivel como completado
-      this.gameService.completeCurrentLevel();
+      // Revelar todas las palabras
+      this.loadCurrentLevel();
       
       // Comprobar si hay más niveles
-      if (this.currentLevel < this.totalLevels) {
+      if (this.gameService.currentLevel) {
         setTimeout(() => {
           this.guessInput = '';
-          this.message = `¡Avanzando a la fase ${this.currentLevel}!`;
+          this.message = `¡Avanzando al siguiente nivel!`;
         }, 2000);
       } else {
-        this.message = '¡Felicidades! ¡Has completado todas las fases!';
-        // Si es el último nivel, redirigir a la página de victoria
-        setTimeout(() => {
-          this.router.navigate(['/victory']);
-        }, 2000);
+        // Si es el último nivel de la última fase, redirigir a la página de victoria
+        if (this.gameService.completedPhases === this.gameService.totalPhases) {
+          setTimeout(() => {
+            this.router.navigate(['/victory']);
+          }, 2000);
+        }
       }
     } else {
       // Respuesta incorrecta
@@ -222,5 +256,12 @@ export class Game implements OnInit, OnDestroy {
     }
     
     this.guessInput = '';
+  }
+  
+  // Seleccionar una palabra para palabras independientes
+  selectWord(index: number) {
+    if (!this.currentLevel?.isPhrase) {
+      this.selectedWordIndex = index;
+    }
   }
 }
