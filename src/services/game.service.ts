@@ -31,7 +31,7 @@ export interface GamePhase {
 })
 export class GameService {
   // Estado del juego
-  private _maricoins = new BehaviorSubject<number>(50);
+  private _maricoins = new BehaviorSubject<number>(200);
   private _currentPhaseId = new BehaviorSubject<number>(1);
   private _currentLevelId = new BehaviorSubject<string>("1.1");
   private _phases = new BehaviorSubject<GamePhase[]>([
@@ -47,7 +47,9 @@ export class GameService {
           hints: [
             "Se puede aplicar al gimnasio",
             "Realmente se puede aplicar en cualquier ámbito de la vida",
-            "Habla sobre la autoestima durante un largo camino"
+            "Habla sobre la autoestima durante un largo camino",
+            "La última palabra es 'resultado'",
+            "La primera palabra es un verbo en imperativo"
           ],
           unlockedHints: 0,
           words: [
@@ -164,21 +166,30 @@ export class GameService {
     const phases = [...this._phases.value];
     const phaseIndex = phases.findIndex(p => p.id === this.currentPhaseId);
     
-    if (phaseIndex === -1) return false;
+    if (phaseIndex === -1) {
+      console.log('Fase no encontrada:', this.currentPhaseId);
+      return false;
+    }
     
     const levelIndex = phases[phaseIndex].levels.findIndex(l => l.id === this.currentLevelId);
     
-    if (levelIndex === -1) return false;
+    if (levelIndex === -1) {
+      console.log('Nivel no encontrado:', this.currentLevelId);
+      return false;
+    }
     
     const level = phases[phaseIndex].levels[levelIndex];
+    console.log('Pistas desbloqueadas:', level.unlockedHints, 'de', level.hints.length);
     
     if (level.unlockedHints < level.hints.length) {
       level.unlockedHints++;
+      console.log('Nueva pista desbloqueada. Total:', level.unlockedHints);
       this._phases.next(phases);
       this.saveGameState();
       return true;
     }
     
+    console.log('No hay más pistas para desbloquear');
     return false;
   }
 
@@ -354,10 +365,25 @@ export class GameService {
   }
 
   resetGame(): void {
+    // Borrar el estado guardado primero para evitar problemas de caché
+    if (this.isBrowser()) {
+      localStorage.clear(); // Limpiamos todo el localStorage para asegurar
+      console.log('LocalStorage limpiado completamente');
+    }
+    
     // Reiniciar a los valores iniciales
-    this._maricoins.next(50);
+    this._maricoins.next(200);
     this._currentPhaseId.next(1);
     this._currentLevelId.next("1.1");
+    
+    // Definir las pistas actualizadas
+    const updatedHints = [
+      "Se puede aplicar al gimnasio",
+      "Realmente se puede aplicar en cualquier ámbito de la vida",
+      "Habla sobre la autoestima durante un largo camino",
+      "La última palabra es 'resultado'",
+      "La primera palabra es un verbo en imperativo"
+    ];
     
     // Reiniciar las fases y niveles
     this._phases.next([
@@ -370,12 +396,7 @@ export class GameService {
             id: "1.1",
             name: "Nivel 1: Filosofía de vida",
             description: "Para celebrar un año juntos, José ha decidido hacerte un regalo, pero como todo en la vida no va a ser fácil, pero sí que nos recomienda que acabemos el juego en 1-2 semanas. Aunque pensándolo bien, un juego que dure más de eso es un lujo en la actualidad, así que aunque no pudieras disfrutar de tu regalo, habrías disfrutado del juego. Y eso pega mucho con una cita filosófica que a José le encanta aplicar en la vida. Es el momento de que escribas esa frase si quieres avanzar",
-            hints: [
-              "Se puede aplicar al gimnasio",
-              "Realmente se puede aplicar en cualquier ámbito de la vida",
-              "Habla sobre la autoestima durante un largo camino donde tal vez no es sencillo visualizar el objetivo en todo momento",
-              "La última palabra es 'resultado'",
-            ],
+            hints: updatedHints,
             unlockedHints: 0,
             words: [
               { text: "DISFRUTA", unlockedLetters: ["F", "T"] },
@@ -409,11 +430,6 @@ export class GameService {
       }
     ]);
     
-    // Borrar el estado guardado
-    if (this.isBrowser()) {
-      localStorage.removeItem('mariGiftGameState');
-      localStorage.removeItem('lastBonusClaim');
-      console.log('Estado del juego reiniciado correctamente');
-    }
+    console.log('Juego reiniciado con', updatedHints.length, 'pistas disponibles');
   }
 }
