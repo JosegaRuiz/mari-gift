@@ -66,8 +66,36 @@ export class GameService {
           ],
           isPhrase: true,
           completed: false
+        },
+        {
+          id: "1.2",
+          name: "Nivel 2: Mis favoritos",
+          description: "Sé que suena egocéntrico, pero es más bien confianza en ti, con lo que para avanzar quiero proponerte que trates de adivinar 7 de mis películas, videojuegos, animes o series favoritas.",
+          hints: [
+            "Prueba con alguna que te haya obligado a ver"
+          ],
+          unlockedHints: 0,
+          words: [
+            { text: "ONE PIECE", unlockedLetters: [] },
+            { text: "MR ROBOT", unlockedLetters: [] },
+            { text: "ATTACK ON TITANS", unlockedLetters: [] },
+            { text: "BLEACH", unlockedLetters: [] },
+            { text: "DIGIMON", unlockedLetters: [] },
+            { text: "SHINGEKI NO KYOJIN", unlockedLetters: [] },
+            { text: "COMO CONOCI A VUESTRA MADRE", unlockedLetters: [] },
+            { text: "KINGDOM HEARTS", unlockedLetters: [] },
+            { text: "DRAGON BALL", unlockedLetters: [] },
+            { text: "POKEMON", unlockedLetters: [] },
+            { text: "MONSTER HUNTER", unlockedLetters: [] },
+            { text: "IT TAKES TWO", unlockedLetters: [] },
+            { text: "HOUSE", unlockedLetters: [] },
+            { text: "LA VIDA ES BELLA", unlockedLetters: [] }
+          ],
+          isPhrase: false,
+          completed: false,
+          guessedWords: [],
+          requiredGuesses: 7
         }
-        // Aquí irían más niveles de la fase 1
       ],
       completed: false
     },
@@ -75,7 +103,35 @@ export class GameService {
       id: 2,
       name: "Maria y sus gustos",
       description: "Descubre los gustos y preferencias de Maria",
-      levels: [],
+      levels: [
+        {
+          id: "2.1",
+          name: "Nivel 1: Tus cualidades",
+          description: "Ha llegado el momento de hablar de ti, mi vida entera, la cual no ha cobrado sentido hasta que te conocí hace poco más de un año... Desde que te conocí has hecho especial cada momento que compartimos y me has enseñado a disfrutar de los momentos de soledad o cuando no estamos juntos, aunque echándote mucho de menos. Podría regalarte los oídos, pero me apetece, ya que pienso que eres demasiado autocrítica y sobre todo mala contigo, me parece un buen momento para que empieces acertando 3 de las muchas características que tienes que me encantan.",
+          hints: [
+            "Pueden ser cosas físicas, cosas de la personalidad",
+            "Este nivel es fácil, tienes muchas cosas, lo importante de este nivel es ver cómo tú te defines a ti misma o qué cosas eres capaz de valorar de ti misma"
+          ],
+          unlockedHints: 0,
+          words: [
+            { text: "TIERNA", unlockedLetters: [] },
+            { text: "SENSIBLE", unlockedLetters: [] },
+            { text: "AMOROSA", unlockedLetters: [] },
+            { text: "FELIZ", unlockedLetters: [] },
+            { text: "DISTINTA", unlockedLetters: [] },
+            { text: "FUERTE", unlockedLetters: [] },
+            { text: "SINCERA", unlockedLetters: [] },
+            { text: "GUAPA", unlockedLetters: [] },
+            { text: "TETAS", unlockedLetters: [] },
+            { text: "CARA", unlockedLetters: [] },
+            { text: "CULO", unlockedLetters: [] }
+          ],
+          isPhrase: false,
+          completed: false,
+          guessedWords: [],
+          requiredGuesses: 3
+        }
+      ],
       completed: false
     },
     {
@@ -399,17 +455,8 @@ export class GameService {
     this._currentPhaseId.next(1);
     this._currentLevelId.next("1.1");
     
-    // Definir las pistas actualizadas
-    const updatedHints = [
-      "Se puede aplicar al gimnasio",
-      "Realmente se puede aplicar en cualquier ámbito de la vida",
-      "Habla sobre la autoestima durante un largo camino",
-      "La última palabra es 'resultado'",
-      "La primera palabra es un verbo en imperativo"
-    ];
-    
-    // Reiniciar las fases y niveles
-    this._phases.next([
+    // Reiniciar las fases y niveles con la configuración inicial
+    const initialPhases = [
       {
         id: 1,
         name: "Yo y mis gustos",
@@ -419,7 +466,13 @@ export class GameService {
             id: "1.1",
             name: "Nivel 1: Filosofía de vida",
             description: "Para celebrar un año juntos, José ha decidido hacerte un regalo, pero como todo en la vida no va a ser fácil, pero sí que nos recomienda que acabemos el juego en 1-2 semanas. Aunque pensándolo bien, un juego que dure más de eso es un lujo en la actualidad, así que aunque no pudieras disfrutar de tu regalo, habrías disfrutado del juego. Y eso pega mucho con una cita filosófica que a José le encanta aplicar en la vida. Es el momento de que escribas esa frase si quieres avanzar",
-            hints: updatedHints,
+            hints: [
+              "Se puede aplicar al gimnasio",
+              "Realmente se puede aplicar en cualquier ámbito de la vida",
+              "Habla sobre la autoestima durante un largo camino",
+              "La última palabra es 'resultado'",
+              "La primera palabra es un verbo en imperativo"
+            ],
             unlockedHints: 0,
             words: [
               { text: "DISFRUTA", unlockedLetters: ["F", "T"] },
@@ -444,7 +497,6 @@ export class GameService {
             unlockedHints: 0,
             words: [
               { text: "ONE PIECE", unlockedLetters: [] },
-              { text: "THE LAST OF US", unlockedLetters: [] },
               { text: "MR ROBOT", unlockedLetters: [] },
               { text: "ATTACK ON TITANS", unlockedLetters: [] },
               { text: "BLEACH", unlockedLetters: [] },
@@ -457,19 +509,13 @@ export class GameService {
               { text: "MONSTER HUNTER", unlockedLetters: [] },
               { text: "IT TAKES TWO", unlockedLetters: [] },
               { text: "HOUSE", unlockedLetters: [] },
-              { text: "LA VIDA ES BELLA", unlockedLetters: [] },
-              { text: "CALL OF DUTY", unlockedLetters: [] },
-              { text: "HARRY POTTER", unlockedLetters: [] },
-              { text: "DEATH NOTE", unlockedLetters: [] },
-              { text: "NARUTO", unlockedLetters: [] },
-              { text: "ONE PUNCH MAN", unlockedLetters: [] },
-              { text: "SAKURA", unlockedLetters: [] },
+              { text: "LA VIDA ES BELLA", unlockedLetters: [] }
             ],
             isPhrase: false,
             completed: false,
             guessedWords: [],
             requiredGuesses: 7
-          },
+          }
         ],
         completed: false
       },
@@ -477,7 +523,35 @@ export class GameService {
         id: 2,
         name: "Maria y sus gustos",
         description: "Descubre los gustos y preferencias de Maria",
-        levels: [],
+        levels: [
+          {
+            id: "2.1",
+            name: "Nivel 1: Tus cualidades",
+            description: "Ha llegado el momento de hablar de ti, mi vida entera, la cual no ha cobrado sentido hasta que te conocí hace poco más de un año... Desde que te conocí has hecho especial cada momento que compartimos y me has enseñado a disfrutar de los momentos de soledad o cuando no estamos juntos, aunque echándote mucho de menos. Podría regalarte los oídos, pero me apetece, ya que pienso que eres demasiado autocrítica y sobre todo mala contigo, me parece un buen momento para que empieces acertando 3 de las muchas características que tienes que me encantan.",
+            hints: [
+              "Pueden ser cosas físicas, cosas de la personalidad",
+              "Este nivel es fácil, tienes muchas cosas, lo importante de este nivel es ver cómo tú te defines a ti misma o qué cosas eres capaz de valorar de ti misma"
+            ],
+            unlockedHints: 0,
+            words: [
+              { text: "TIERNA", unlockedLetters: [] },
+              { text: "SENSIBLE", unlockedLetters: [] },
+              { text: "AMOROSA", unlockedLetters: [] },
+              { text: "FELIZ", unlockedLetters: [] },
+              { text: "DISTINTA", unlockedLetters: [] },
+              { text: "FUERTE", unlockedLetters: [] },
+              { text: "SINCERA", unlockedLetters: [] },
+              { text: "GUAPA", unlockedLetters: [] },
+              { text: "TETAS", unlockedLetters: [] },
+              { text: "CARA", unlockedLetters: [] },
+              { text: "CULO", unlockedLetters: [] }
+            ],
+            isPhrase: false,
+            completed: false,
+            guessedWords: [],
+            requiredGuesses: 3
+          }
+        ],
         completed: false
       },
       {
@@ -487,8 +561,10 @@ export class GameService {
         levels: [],
         completed: false
       }
-    ]);
+    ];
     
-    console.log('Juego reiniciado con', updatedHints.length, 'pistas disponibles');
+    this._phases.next(initialPhases);
+    
+    console.log('Juego reiniciado correctamente');
   }
 }
