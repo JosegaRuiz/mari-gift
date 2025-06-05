@@ -31,18 +31,6 @@ export class Store implements OnInit, OnDestroy {
       price: 30
     },
     {
-      id: 2,
-      name: 'Letra Gratis',
-      description: 'Desbloquea una letra aleatoria sin coste',
-      price: 25
-    },
-    {
-      id: 3,
-      name: 'Bonus de Coins',
-      description: 'Recibe 20 MariCoins adicionales',
-      price: 50
-    },
-    {
       id: 4,
       name: 'Saltar Nivel',
       description: 'Avanza al siguiente nivel automáticamente',
@@ -165,17 +153,14 @@ export class Store implements OnInit, OnDestroy {
       switch(item.id) {
         case 1: // Pista Extra
           // Aquí implementaríamos la lógica para mostrar una pista adicional
-          break;
-        case 2: // Letra Gratis
-          // Desbloquear una letra aleatoria
-          // (Esta lógica debería estar en el componente de juego)
-          break;
-        case 3: // Bonus de Coins
-          this.gameService.updateMaricoins(20);
+          this.message = `¡Has comprado una pista extra! Revisa el nivel actual.`;
           break;
         case 4: // Saltar Nivel
           if (this.gameService.currentLevel < this.gameService.totalLevels) {
             this.gameService.completeCurrentLevel();
+            this.message = `¡Has avanzado al siguiente nivel!`;
+          } else {
+            this.message = `Ya estás en el último nivel.`;
           }
           break;
       }

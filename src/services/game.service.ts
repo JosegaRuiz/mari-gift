@@ -182,8 +182,11 @@ export class GameService {
   }
 
   resetGame(): void {
+    // Reiniciar a los valores iniciales
     this._maricoins.next(50);
     this._currentLevel.next(1);
+    
+    // Reiniciar los niveles
     this._levels.next([
       {
         name: 'Nivel 1',
@@ -222,6 +225,11 @@ export class GameService {
       }
     ]);
     
-    localStorage.removeItem('mariGiftGameState');
+    // Borrar el estado guardado
+    if (this.isBrowser()) {
+      localStorage.removeItem('mariGiftGameState');
+      localStorage.removeItem('lastBonusClaim');
+      console.log('Estado del juego reiniciado correctamente');
+    }
   }
 }
