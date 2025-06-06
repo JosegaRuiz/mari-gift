@@ -25,6 +25,14 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
       <div class="download-link">
         <p>Si no puedes ver el PDF, <a [href]="pdfUrl" download="Regalo.pdf">descárgalo aquí</a>.</p>
       </div>
+      
+      <div class="debug-info" *ngIf="isBrowser" style="margin-top: 20px; padding: 10px; background-color: #f5f5f5; border: 1px solid #ddd;">
+        <h3>Información de depuración:</h3>
+        <p>URL base: {{ baseUrl }}</p>
+        <p>URL del PDF: {{ pdfUrl }}</p>
+        <p>URL completa: {{ fullPdfUrl }}</p>
+        <p>Ruta actual: {{ currentPath }}</p>
+      </div>
     </div>
   `,
   styleUrl: './victory.scss'
@@ -33,6 +41,9 @@ export class Victory implements OnInit {
   isBrowser: boolean;
   pdfUrl: string = '';
   safePdfUrl!: SafeResourceUrl;
+  baseUrl: string = '';
+  fullPdfUrl: string = '';
+  currentPath: string = '';
   
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -43,9 +54,27 @@ export class Victory implements OnInit {
   
   ngOnInit() {
     if (this.isBrowser) {
-      // Usar una ruta absoluta desde la raíz del proyecto
-      this.pdfUrl = `/assets/regalo.pdf?t=${new Date().getTime()}`;
-      this.safePdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.pdfUrl);
+      // Información de depuración
+      this.baseUrl = window.location.origin;
+      this.currentPath = window.location.pathname;
+      
+      // Solución simple que funciona en ambos entornos
+      this.pdfUrl = './assets/regalo.pdf';
+      
+      // URL completa para depuración
+      this.fullPdfUrl = new URL(this.pdfUrl, window.location.href).href;
+      
+      // Para la visualización en el objeto, usar una URL absoluta
+      this.safePdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+        this.pdfUrl + '?t=' + new Date().getTime()
+      );
+      
+      console.log('Información de depuración:');
+      console.log('URL base:', this.baseUrl);
+      console.log('URL del PDF:', this.pdfUrl);
+      console.log('URL completa:', this.fullPdfUrl);
+      console.log('Ruta actual:', this.currentPath);
+      console.log('Href completo:', window.location.href);
     }
   }
 }
